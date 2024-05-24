@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/mysql/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("CORE_MYSQL_REPLICA_DB_URL")
+}
+
+model departments {
+  id                     BigInt   @id @default(autoincrement())
+  organization_id        BigInt?
+  name                   String?  @db.VarChar(255)
+  department_code        String?  @db.VarChar(255)
+  external_department_id String?  @db.VarChar(255)
+  data_source            Int?
+  display_order          Int?     @default(1)
+  created_at             DateTime @default(now()) @db.DateTime(6)
+  updated_at             DateTime @updatedAt @db.DateTime(6)
+  parent_id              BigInt?
+  full_name              String?  @db.Text
+
+  @@index([external_department_id], map: "index_departments_on_external_department_id")
+  @@index([organization_id], map: "index_departments_on_organization_id")
+  @@index([parent_id], map: "index_departments_on_parent_id")
+}
+
+model integrations {
+  id              BigInt   @id @default(autoincrement())
+  organization_id BigInt
+  software_id     Int?
+  created_at      DateTime @default(now()) @db.DateTime(6)
+  updated_at      DateTime @updatedAt @db.DateTime(6)
+}
+
+model softwares {
+  id         BigInt   @id @default(autoincrement())
+  key        String   @unique(map: "index_softwares_on_key") @db.VarChar(255)
+  created_at DateTime @default(now()) @db.DateTime(6)
+  updated_at DateTime @updatedAt @db.DateTime(6)
+}
+
+model employee_external_profiles {
+  id                BigInt        @id @default(autoincrement())
+  employee_id       BigInt        
+  employee_ledger_integration_id  BigInt
+  external_id       String?
+  first_name        String?       @db.VarChar(255)
+  last_name         String?       @db.VarChar(255)
+  employee_code     String?       @db.VarChar(255)
+  personal_email    String?       @db.VarChar(255)
+  title             String?       @db.VarChar(255)
+  employment_status Int?      
+  employment_type   Int?       
+  organization_id   BigInt  
+  joined_on         DateTime?     @db.DateTime(6)
+  resigned_on       DateTime?     @db.DateTime(6)
+  username          String?       @db.VarChar(255)
+  email             String?       @db.VarChar(255)
+  status            Int?       
+  created_at        DateTime @default(now()) @db.DateTime(6)
+  updated_at        DateTime @updatedAt @db.DateTime(6)
+
+  @@index([employee_code], map: "index_employee_external_profiles_on_employee_code")
+}

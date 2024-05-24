@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/@prisma/mongo/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+type Location {
+  address   String?
+  telephone String?
+}
+
+model Employee {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  session_id        String
+  page_number       Int?
+  organization_id   String?
+  integration_id    String?
+  external_id       String?
+  employee_code     String?
+  departments       String[] 
+  employment_status String?
+  last_name         String?
+  first_name        String?
+  email             String?
+  personal_email    String?
+  location          Location?
+  title             String?
+  joined_on         String?
+  resigned_on       String?
+  employment_type   String?
+}
+
+model Department {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  session_id      String
+  page_Int        Int?
+  organization_id String?
+  integration_id  String?
+  external_id     String?
+  name            String?
+  position        String?
+  parent          Json?
+  code            String?
+}

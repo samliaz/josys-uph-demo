@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Existing mongo services
+  mongo1:
+    image: mongo:5
+    restart: unless-stopped
+    container_name: mongo1
+    ports:
+      - '27017:27017'
+    command:
+      ['mongod', '--replSet', 'myReplicaSet', '--bind_ip', 'localhost,mongo1']
+  mongo2:
+    image: mongo:5
+    restart: unless-stopped
+    container_name: mongo2
+    ports:
+      - '27018:27017'
+    command:
+      ['mongod', '--replSet', 'myReplicaSet', '--bind_ip', 'localhost,mongo2']
+  mongo3:
+    image: mongo:5
+    restart: unless-stopped
+    container_name: mongo3
+    ports:
+      - '27019:27017'
+    command:
+      ['mongod', '--replSet', 'myReplicaSet', '--bind_ip', 'localhost,mongo3']
+
+  # New MySQL service
+  mysql:
+    image: mysql:8.0 # You can choose a different version if needed
+    restart: unless-stopped
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password # Replace with your actual password
+      MYSQL_DATABASE: uph # Replace with your desired database name
+    healthcheck:
+        test: "/usr/bin/mysql --user=root --password=$$MYSQL_ROOT_PASSWORD --execute \"SHOW DATABASES;\""
+        interval: 2s
+        timeout: 30s
+        retries: 15
+    ports:
+      - 3306:3306 # Maps the container port 3306 to host port 3306
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - '5672:5672' #JMS Port
+      - '15672:15672' #Management Port - default user:pass = guest:guest
+
+  uph:
+    image: josys/user-profile-handler
+    build:
+      context: .
+      args:
+        - GITHUB_PACKAGE_REGISTRY_TOKEN
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}

@@ -1,0 +1,12 @@
+app:
+  name: Clean-Architecture-Template
+  host: localhost
+  port: 8080
+  node_env: development
+
+error:
+  sentry:
+    enable: true
+    log_level: error
+    traces_sample_rate: 1.0
+    debug_mode: false

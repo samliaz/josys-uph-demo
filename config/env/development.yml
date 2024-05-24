@@ -1,0 +1,10 @@
+app:
+  name: Josys-User-Profile-Handler
+  host: localhost
+  port: 8080
+  node_env: development
+
+error:
+  sentry:
+    debug_mode: false
+    enable: false
